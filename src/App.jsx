@@ -7,6 +7,7 @@ import { darcula } from 'react-syntax-highlighter/dist/cjs/styles/prism';
 function App() {
   const [data, setData] = useState(""); // Untuk menyimpan respons AI
   const [language, setLanguage] = useState("id"); // Default bahasa Indonesia
+  const [loading, setLoading] = useState(false); // Untuk mendeteksi loading
 
   const handleSubmit = async () => {
     const content = document.getElementById("content").value;
@@ -15,15 +16,21 @@ function App() {
       return;
     }
 
-    // Kirim permintaan ke API dengan bahasa yang dipilih
-    const ai = await requestToGroqAI(content, language);
-    setData(ai);
+    setLoading(true); // Set loading ke true
+    try {
+      const ai = await requestToGroqAI(content, language);
+      setData(ai);
+    } catch (error) {
+      alert("Terjadi kesalahan: " + error.message);
+    } finally {
+      setLoading(false); // Set loading ke false
+    }
   };
 
   // Tangkap tombol Enter
   const handleKeyDown = (e) => {
     if (e.key === "Enter") {
-      e.preventDefault(); // Hindari perilaku default (misal submit form)
+      e.preventDefault();
       handleSubmit();
     }
   };
@@ -57,7 +64,7 @@ function App() {
           className="py-2 px-4 text-md rounded-md w-full"
           id="content"
           type="text"
-          onKeyDown={handleKeyDown} // Tambahkan handler untuk menangkap tombol Enter
+          onKeyDown={handleKeyDown}
         />
 
         {/* Tombol Kirim */}
@@ -65,11 +72,19 @@ function App() {
           onClick={handleSubmit}
           type="button"
           className="bg-amber-500 py-2 px-4 font-bold text-white rounded-md"
+          disabled={loading} // Disable tombol saat loading
         >
-          Kirim
+          {loading ? "Loading..." : "Kirim"} {/* Animasi teks loading */}
         </button>
       </form>
 
+      {/* Loading Spinner */}
+      {loading && (
+        <div className="py-4">
+          <div className="loader"></div> {/* Anda bisa gunakan CSS animasi di sini */}
+        </div>
+      )}
+      
       {/* Hasil respons */}
       <div className="max-w-4xl w-full mx-auto ">
         {data ? (
