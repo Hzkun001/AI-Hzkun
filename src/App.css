@@ -58,15 +58,21 @@ code {
 }
 
 .loader {
-  border: 4px solid rgba(0, 0, 0, 0.1);
+  border: 4px solid transparent; /* Gunakan transparan untuk bagian kosong */
+  border-top: 4px solid #f09545; /* Warna awal */
+  border-right: 4px solid #fdecec; /* Warna kedua */
+  border-bottom: 4px solid #f09545; /* Warna ketiga */
+  border-left: 4px solid #fdecec; /* Warna keempat */
   width: 36px;
   height: 36px;
   border-radius: 50%;
-  border-left-color: #4fa94d;
-  animation: spin 1s linear infinite;
+  animation: spin 0.5s linear infinite;
 }
 
 @keyframes spin {
+  from {
+    transform: rotate(0deg); /* Mulai dari 0 derajat */
+  }
   to {
     transform: rotate(360deg);
   }

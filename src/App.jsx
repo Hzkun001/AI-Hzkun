@@ -3,7 +3,6 @@ import './App.css';
 import { requestToGroqAI } from "./utils/groq";
 import { Light as SyntaxHighLight } from "react-syntax-highlighter";
 import { darcula } from 'react-syntax-highlighter/dist/cjs/styles/prism';
-
 function App() {
   const [data, setData] = useState(""); // Untuk menyimpan respons AI
   const [language, setLanguage] = useState("id"); // Default bahasa Indonesia
@@ -25,6 +24,9 @@ function App() {
     } finally {
       setLoading(false); // Set loading ke false
     }
+
+      const cleanedData = ai.replace(/```/g, ""); // Hapus semua backticks
+      setData(cleanedData);
   };
 
   // Tangkap tombol Enter
@@ -37,13 +39,24 @@ function App() {
 
   return (
     <main className="flex flex-col min-h-[80vh] justify-center items-center max-w-4xl w-full mx-auto">
-      <h1 className="text-4xl text-amber-500 font-bold">Hzkun AI</h1>
+
+  <div className="absolute top-4 left-4">
+    <img
+      src="/public/robot.svg"
+      alt="Logo"
+      className="w-12 h-12 rounded-full border-2 border-amber-500 shadow-lg"
+    />
+    <span className="text-white text-md">
+      <i>Build with 🩷</i>
+    </span>
+  </div>
+      <h1 className="text-4xl text-amber-500 font-bold">🐗Hzkun AI</h1>
       <p className="text-md py-2 px-4 text-white font-bold underline underline-offset-4 decoration-amber-500">
-        Awesome Fast AI for Programmer.
+        👑Awesome Fast AI for Programmer.👑
       </p>
 
       {/* Form input */}
-      <form className="flex flex-col gap-4 py-4 w-full px-4">
+      <form className="flex flex-col gap-4 py-4 w-full px-4 sm:w-3/4 md:w-1/2">
         {/* Dropdown untuk memilih bahasa */}
         <select
           value={language}
@@ -74,17 +87,17 @@ function App() {
           className="bg-amber-500 py-2 px-4 font-bold text-white rounded-md"
           disabled={loading} // Disable tombol saat loading
         >
-          {loading ? "Loading..." : "Kirim"} {/* Animasi teks loading */}
+          {loading ? "Loading..." : "Kirim"}
         </button>
       </form>
 
       {/* Loading Spinner */}
       {loading && (
         <div className="py-4">
-          <div className="loader"></div> {/* Anda bisa gunakan CSS animasi di sini */}
+          <div className="loader"></div>
         </div>
       )}
-      
+
       {/* Hasil respons */}
       <div className="max-w-4xl w-full mx-auto ">
         {data ? (
@@ -93,17 +106,18 @@ function App() {
             style={darcula}
             wrapLongLines={true}
             customStyle={{
-              width: "100%",
-              maxWidth: "900px",
-              margin: "auto",
+              backgroundColor: "#2d2d2d", // Pastikan warnanya sesuai tema
+              color: "#f8f8f2", // Sesuaikan dengan style darcula
+              fontSize: "14px",
+              borderRadius: "8px",
+              padding: "16px",
             }}
           >
-            {data}
+            {data.replace(/```/g, "")} {/* Hapus backticks */}
           </SyntaxHighLight>
         ) : null}
       </div>
     </main>
   );
 }
-
 export default App;
