@@ -46,7 +46,7 @@ function App() {
 
   <div className="absolute top-4 left-4">
     <img
-      src="/public/robot.svg"
+      src="../public/robot.svg"
       alt="Logo"
       className="w-12 h-12 rounded-full border-2 border-amber-500 shadow-lg"
     />
