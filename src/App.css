@@ -58,15 +58,16 @@ code {
 }
 
 .loader {
-  border: 4px solid transparent; /* Gunakan transparan untuk bagian kosong */
-  border-top: 4px solid #f09545; /* Warna awal */
-  border-right: 4px solid #fdecec; /* Warna kedua */
-  border-bottom: 4px solid #f09545; /* Warna ketiga */
-  border-left: 4px solid #fdecec; /* Warna keempat */
-  width: 36px;
+  border: 4px solid transparent;
+  /*Gunakantransparanuntukbagiankosong*/border-top: 4px solid #f09545;
+  /*Warnaawal*/border-right: 4px solid #fdecec;
+  /*Warnakedua*/border-bottom: 4px solid #f09545;
+  /*Warnaketiga*/border-left: 4px solid #fdecec;
+  /*Warnakeempat*/width: 36px;
   height: 36px;
   border-radius: 50%;
   animation: spin 0.5s linear infinite;
+  -webkit-animation: spin 0.5s linear infinite;
 }
 
 @keyframes spin {
