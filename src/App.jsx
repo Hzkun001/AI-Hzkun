@@ -1,3 +1,4 @@
+import { SpeedInsights } from "@vercel/speed-insights/next"
 import { useState } from "react";
 import './App.css';
 import { requestToGroqAI } from "./utils/groq";
