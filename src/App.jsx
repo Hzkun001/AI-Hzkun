@@ -70,6 +70,7 @@ function App() {
           <option value="zh">中文 (China)</option>
           <option value="ru">Русский (Rusia)</option>
           <option value="hi">हिन्दी (India)</option>
+          <option value="ar">Arab (Arabic)</option>
         </select>
 
         {/* Input teks */}
