@@ -101,7 +101,7 @@ function App() {
       )}
 
       {/* Hasil respons */}
-      <div className="max-w-4xl w-full mx-auto ">
+      <div className="syntax-container">
         {data ? (
           <SyntaxHighLight
             language="swift"
@@ -115,6 +115,9 @@ function App() {
               padding: "16px",
               whiteSpace: "pre-wrap",     // Bungkus teks
               wordWrap: "break-word",
+              overflowWrap: "break-word", // Dukungan tambahan untuk kata panjang
+              maxWidth: "100%", // Batasi lebar maksimum
+              overflowX: "auto", // Jika terlalu panjang, tambahkan scroll horizontal
             }}
           >
             {data.replace(/```/g, "")} {/* Hapus backticks */}

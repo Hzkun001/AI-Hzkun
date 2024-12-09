@@ -70,6 +70,14 @@ code {
   -webkit-animation: spin 0.5s linear infinite;
 }
 
+.syntax-container {
+  max-width: 100%; /* Batasi lebar kontainer */
+  overflow-x: auto; /* Tambahkan scroll horizontal jika perlu */
+  word-wrap: break-word; /* Bungkus kata yang panjang */
+  overflow-wrap: break-word;
+  white-space: pre-wrap; /* Bungkus teks */
+}
+
 @keyframes spin {
   from {
     transform: rotate(0deg); /* Mulai dari 0 derajat */
