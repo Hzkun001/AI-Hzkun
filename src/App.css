@@ -78,3 +78,10 @@ code {
     transform: rotate(360deg);
   }
 }
+
+.max-w-4xl {
+  max-width: 1024px; /* Lebar maksimum untuk respons */
+  margin: 0 auto; /* Posisikan di tengah */
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}

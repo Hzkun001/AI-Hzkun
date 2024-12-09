@@ -108,11 +108,13 @@ function App() {
             style={darcula}
             wrapLongLines={true}
             customStyle={{
-              backgroundColor: "#2d2d2d", // Pastikan warnanya sesuai tema
-              color: "#f8f8f2", // Sesuaikan dengan style darcula
-              fontSize: "14px",
-              borderRadius: "8px",
+              backgroundColor: "#2d2d2d", // Warna latar belakang
+              color: "#f8f8f2",           // Warna teks
+              fontSize: "14px",           // Ukuran font
+              borderRadius: "8px",        // Radius border
               padding: "16px",
+              whiteSpace: "pre-wrap",     // Bungkus teks
+              wordWrap: "break-word",
             }}
           >
             {data.replace(/```/g, "")} {/* Hapus backticks */}
