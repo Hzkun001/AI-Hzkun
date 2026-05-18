@@ -16,6 +16,7 @@ function App() {
   const [model, setModel] = useState(DEFAULT_MODEL);
   const [loading, setLoading] = useState(false);
   const [copiedIdx, setCopiedIdx] = useState(null);
+  const [showSettings, setShowSettings] = useState(false);
   const inputRef = useRef(null);
   const messagesEndRef = useRef(null);
 
@@ -24,14 +25,17 @@ function App() {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, loading]);
 
-  const submitPrompt = async (prompt) => {
-    if (!prompt || prompt.trim() === "") {
-      alert("Input tidak boleh kosong!");
-      return;
+  // Auto-focus input setelah loading selesai
+  useEffect(() => {
+    if (!loading && inputRef.current) {
+      inputRef.current.focus();
     }
+  }, [loading]);
+
+  const submitPrompt = async (prompt) => {
+    if (!prompt || prompt.trim() === "") return;
 
     const userMessage = { role: "user", content: prompt };
-    // Snapshot history saat ini (sebelum tambah user message) untuk dikirim ke AI
     const historyForAi = messages;
 
     setMessages((prev) => [...prev, userMessage]);
@@ -87,34 +91,53 @@ function App() {
   const currentModel = AVAILABLE_MODELS.find((m) => m.id === model);
 
   return (
-    <div className="app-bg">
-      <main className="relative z-10 flex flex-col items-center w-full max-w-4xl mx-auto px-4 sm:px-6 py-8 sm:py-12 min-h-screen">
-        {/* ---------- HEADER ---------- */}
-        <header className="flex flex-col items-center text-center mb-8 fade-in-up">
-          <div className="flex items-center gap-3 mb-3">
-            <img
-              src="/robot.svg"
-              alt="Hzkun AI Logo"
-              className="w-12 h-12 sm:w-14 sm:h-14 rounded-full border-2 border-amber-500 shadow-lg pulse-glow"
-            />
-            <h1 className="text-3xl sm:text-5xl font-bold bg-gradient-to-r from-amber-400 via-amber-500 to-pink-500 bg-clip-text text-transparent">
-              Hzkun AI
-            </h1>
-          </div>
-          <p className="text-sm sm:text-base text-gray-300 max-w-md">
-            👑 Asisten AI cepat untuk programmer
-          </p>
-          <p className="text-xs text-gray-500 mt-1 italic">Build with 🩷</p>
-        </header>
+    <div className="app-bg flex flex-col h-screen overflow-hidden">
+      {/* ========== TOP BAR (compact header) ========== */}
+      <header className="sticky-header relative z-20 flex items-center justify-between px-4 sm:px-6 py-3 border-b border-white/5 bg-[#0f0f1a]/80 backdrop-blur-md">
+        <div className="flex items-center gap-2.5">
+          <img
+            src="/robot.svg"
+            alt="Hzkun AI Logo"
+            className="w-8 h-8 rounded-full border-2 border-amber-500 shadow-md"
+          />
+          <h1 className="text-lg sm:text-xl font-bold bg-gradient-to-r from-amber-400 via-amber-500 to-pink-500 bg-clip-text text-transparent">
+            Hzkun AI
+          </h1>
+          <span className="hidden sm:inline text-[11px] text-gray-500 italic ml-1">
+            Build with 🩷
+          </span>
+        </div>
 
-        {/* ---------- FORM CARD ---------- */}
-        <section className="glass w-full p-4 sm:p-6 fade-in-up">
-          {/* Settings: Bahasa & Model */}
-          <div className="flex flex-col sm:flex-row gap-3 mb-3">
+        <div className="flex items-center gap-2">
+          {messages.length > 0 && (
+            <button
+              onClick={handleClearChat}
+              className="text-[11px] text-gray-400 hover:text-red-400 transition-colors px-2.5 py-1.5 rounded-lg border border-white/10 hover:border-red-400/30"
+              title="Hapus semua percakapan"
+            >
+              🗑️ <span className="hidden sm:inline">Hapus Chat</span>
+            </button>
+          )}
+          <button
+            onClick={() => setShowSettings(!showSettings)}
+            className={`text-[11px] px-2.5 py-1.5 rounded-lg border transition-colors ${
+              showSettings
+                ? "text-amber-400 border-amber-500/30 bg-amber-500/10"
+                : "text-gray-400 border-white/10 hover:text-amber-400 hover:border-amber-500/30"
+            }`}
+            title="Pengaturan model & bahasa"
+          >
+            ⚙️ <span className="hidden sm:inline">Pengaturan</span>
+          </button>
+        </div>
+      </header>
+
+      {/* Settings panel (collapsible) */}
+      {showSettings && (
+        <div className="relative z-10 border-b border-white/5 bg-[#0f0f1a]/60 backdrop-blur-sm px-4 sm:px-6 py-3 fade-in-up">
+          <div className="max-w-4xl mx-auto flex flex-col sm:flex-row gap-3">
             <div className="flex-1">
-              <label className="block text-[11px] text-gray-400 mb-1 ml-1">
-                🌐 Bahasa
-              </label>
+              <label className="block text-[11px] text-gray-400 mb-1 ml-1">🌐 Bahasa</label>
               <select
                 value={language}
                 onChange={(e) => setLanguage(e.target.value)}
@@ -129,11 +152,8 @@ function App() {
                 <option value="ar" className="bg-gray-900">🇸🇦 العربية</option>
               </select>
             </div>
-
             <div className="flex-1">
-              <label className="block text-[11px] text-gray-400 mb-1 ml-1">
-                🤖 Model AI
-              </label>
+              <label className="block text-[11px] text-gray-400 mb-1 ml-1">🤖 Model AI</label>
               <select
                 value={model}
                 onChange={(e) => setModel(e.target.value)}
@@ -146,88 +166,46 @@ function App() {
                   </option>
                 ))}
               </select>
-            </div>
-
-            {messages.length > 0 && (
-              <div className="flex items-end">
-                <button
-                  onClick={handleClearChat}
-                  className="text-xs text-gray-400 hover:text-red-400 transition-colors px-3 py-2 rounded-lg border border-white/10 hover:border-red-400/30 whitespace-nowrap"
-                  title="Hapus semua percakapan"
-                >
-                  🗑️ Hapus Chat
-                </button>
-              </div>
-            )}
-          </div>
-
-          {/* Deskripsi model aktif */}
-          {currentModel && (
-            <p className="text-[11px] text-gray-500 mb-3 ml-1 italic">
-              ℹ️ {currentModel.description}
-            </p>
-          )}
-
-          {/* Input + Tombol Kirim */}
-          <div className="flex flex-col sm:flex-row gap-3">
-            <input
-              ref={inputRef}
-              placeholder="Ketik permintaanmu di sini..."
-              className="input-modern flex-1 py-3 px-4 text-sm sm:text-base rounded-lg bg-white/5 text-white border border-white/10 placeholder-gray-500 transition-all"
-              type="text"
-              onKeyDown={handleKeyDown}
-              disabled={loading}
-            />
-            <button
-              onClick={handleSubmit}
-              type="button"
-              className="btn-send bg-gradient-to-r from-amber-500 to-pink-500 py-3 px-6 font-semibold text-white rounded-lg flex items-center justify-center gap-2 whitespace-nowrap"
-              disabled={loading}
-            >
-              {loading ? (
-                <>
-                  <span className="dot-typing">
-                    <span></span><span></span><span></span>
-                  </span>
-                  <span>Memproses</span>
-                </>
-              ) : (
-                <>
-                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M22 2L11 13" />
-                    <path d="M22 2L15 22L11 13L2 9L22 2Z" />
-                  </svg>
-                  Kirim
-                </>
+              {currentModel && (
+                <p className="text-[10px] text-gray-500 mt-1 ml-1 italic">
+                  ℹ️ {currentModel.description}
+                </p>
               )}
-            </button>
+            </div>
           </div>
-        </section>
+        </div>
+      )}
 
-        {/* ---------- CHAT AREA ---------- */}
-        <section className="w-full mt-6 flex-1">
+      {/* ========== CHAT AREA (scrollable middle) ========== */}
+      <main className="flex-1 overflow-y-auto px-4 sm:px-6 py-6">
+        <div className="max-w-4xl mx-auto">
           {/* Empty state */}
           {messages.length === 0 && !loading && (
-            <div className="glass p-6 sm:p-8 fade-in-up text-center">
-              <div className="text-5xl mb-3">🐗</div>
-              <h2 className="text-xl sm:text-2xl font-bold text-white mb-2">
-                Halo! Ada yang bisa kubantu?
-              </h2>
-              <p className="text-sm text-gray-400 mb-6">
-                Coba salah satu contoh di bawah, atau ketik pertanyaanmu sendiri.
-              </p>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {EXAMPLE_PROMPTS.map((p, i) => (
-                  <button
-                    key={i}
-                    onClick={() => handleExampleClick(p.text)}
-                    className="example-chip text-left p-3 rounded-lg bg-white/5 border border-white/10 text-sm text-gray-200 hover:text-white"
-                  >
-                    <span className="mr-2">{p.icon}</span>
-                    {p.text}
-                  </button>
-                ))}
+            <div className="flex flex-col items-center justify-center min-h-[60vh] fade-in-up">
+              <div className="glass p-6 sm:p-8 text-center max-w-lg w-full">
+                <div className="text-5xl mb-3">🐗</div>
+                <h2 className="text-xl sm:text-2xl font-bold text-white mb-2">
+                  Halo! Ada yang bisa kubantu?
+                </h2>
+                <p className="text-sm text-gray-400 mb-6">
+                  Coba salah satu contoh di bawah, atau ketik pertanyaanmu sendiri.
+                </p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {EXAMPLE_PROMPTS.map((p, i) => (
+                    <button
+                      key={i}
+                      onClick={() => handleExampleClick(p.text)}
+                      className="example-chip text-left p-3 rounded-lg bg-white/5 border border-white/10 text-sm text-gray-200 hover:text-white"
+                    >
+                      <span className="mr-2">{p.icon}</span>
+                      {p.text}
+                    </button>
+                  ))}
+                </div>
               </div>
+              <p className="text-xs text-gray-600 mt-4">
+                👑 Powered by Groq · © {new Date().getFullYear()} Hzkun AI
+              </p>
             </div>
           )}
 
@@ -304,18 +282,53 @@ function App() {
 
           {/* Loading saat belum ada pesan */}
           {messages.length === 0 && loading && (
-            <div className="glass p-8 fade-in-up flex flex-col items-center gap-3">
-              <div className="loader-modern"></div>
-              <p className="text-sm text-gray-400">AI sedang berpikir...</p>
+            <div className="flex items-center justify-center min-h-[60vh]">
+              <div className="glass p-8 fade-in-up flex flex-col items-center gap-3">
+                <div className="loader-modern"></div>
+                <p className="text-sm text-gray-400">AI sedang berpikir...</p>
+              </div>
             </div>
           )}
-        </section>
-
-        {/* ---------- FOOTER ---------- */}
-        <footer className="mt-8 text-xs text-gray-500 text-center">
-          © {new Date().getFullYear()} Hzkun AI · Powered by Groq
-        </footer>
+        </div>
       </main>
+
+      {/* ========== STICKY INPUT BAR (bottom) ========== */}
+      <footer className="sticky-input relative z-20 border-t border-white/5 bg-[#0f0f1a]/80 backdrop-blur-md px-4 sm:px-6 py-3">
+        <div className="max-w-4xl mx-auto flex gap-3 items-center">
+          <input
+            ref={inputRef}
+            placeholder="Ketik permintaanmu di sini..."
+            className="input-modern flex-1 py-3 px-4 text-sm sm:text-base rounded-xl bg-white/5 text-white border border-white/10 placeholder-gray-500 transition-all"
+            type="text"
+            onKeyDown={handleKeyDown}
+            disabled={loading}
+            autoFocus
+          />
+          <button
+            onClick={handleSubmit}
+            type="button"
+            className="btn-send bg-gradient-to-r from-amber-500 to-pink-500 p-3 sm:py-3 sm:px-5 font-semibold text-white rounded-xl flex items-center justify-center gap-2 whitespace-nowrap"
+            disabled={loading}
+          >
+            {loading ? (
+              <span className="dot-typing">
+                <span></span><span></span><span></span>
+              </span>
+            ) : (
+              <>
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M22 2L11 13" />
+                  <path d="M22 2L15 22L11 13L2 9L22 2Z" />
+                </svg>
+                <span className="hidden sm:inline">Kirim</span>
+              </>
+            )}
+          </button>
+        </div>
+        <p className="text-center text-[10px] text-gray-600 mt-2">
+          Hzkun AI dapat membuat kesalahan. Cek informasi penting.
+        </p>
+      </footer>
     </div>
   );
 }
