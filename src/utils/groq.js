@@ -92,6 +92,25 @@ Be concise but clear.`;
     return aiResponse;
   } catch (error) {
     console.error("Error fetching response from Groq AI:", error);
+
+    // Pesan error yang lebih jelas untuk user
+    const status = error?.status || error?.response?.status;
+    if (status === 401) {
+      throw new Error(
+        "API Key tidak valid. Pastikan VITE_GROQ sudah di-set dengan benar di file .env (lokal) atau di Environment Variables (Vercel)."
+      );
+    }
+    if (status === 429) {
+      throw new Error(
+        "Rate limit tercapai. Coba lagi sebentar atau ganti ke model yang lebih ringan."
+      );
+    }
+    if (status === 404 || error?.message?.includes("model")) {
+      throw new Error(
+        `Model "${model}" tidak ditemukan atau sudah deprecated. Coba pilih model lain.`
+      );
+    }
+
     throw new Error(
       error?.message || "Tidak bisa memproses permintaan Anda saat ini."
     );
